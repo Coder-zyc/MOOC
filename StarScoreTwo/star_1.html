@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>星级评分</title>
+    <style>
+        /*清掉body,ul,li的内外边距*/
+        body,
+        ul,
+        li {
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        .rating,
+        .rating-display {
+            background: url(./image/twoStar.jpg) repeat-x;
+        }
+
+        .rating {
+            position: relative;
+            width: 300px;
+            margin: 100px auto;
+        }
+
+         .rating-display {
+            width: 0px;
+            height: 60px;
+            background-position: 0 -60px;
+        } 
+
+         .rating-mask {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+        } 
+
+        .rating-item {
+            float: left;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="rating" class="rating">
+
+        <!-- <div class="rating-display"></div>
+        
+        <ul class="rating-mask">
+            <li class="rating-item"></li>
+            <li class="rating-item"></li>
+            <li class="rating-item"></li>
+            <li class="rating-item"></li>
+            <li class="rating-item"></li>
+        </ul> -->
+
+        <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script>
+            //默认参数 1.total:一共有几颗 2.num:默认点亮了几颗 3readOnly 是否可读
+            //评分
+
+            //创建HTML
+
+
+            //设置父容器总宽度(星星颗数不定)
+            //设置展示层宽度
+            //设置每颗星星宽度
+
+
+            var rating = (function () {
+                var strategies = {
+                    entire:function(){
+                        return 1;
+                    },
+                    half:function(){
+                        return 2;
+                    },
+                    quarter:function(){
+                        return 4;
+                    }
+                    
+                };
+
+
+                var Rating = function (el, options) {
+                    this.$el = $(el);
+                    this.opts = $.extend({}, Rating.DFAULTS, options);
+
+                    if(!strategies[this.opts.mode]){
+                        this.opts.mode = "entire";
+                    }
+                    this.ratio = strategies[this.opts.mode]();
+                    this.opts.total *= this.ratio;
+                    this.opts.num *= this.ratio
+
+                    this.itemWidth = 60/ this.ratio; //每颗星星的宽度
+                    this.displayWidth = this.opts.num * this.itemWidth;
+
+                };
+                Rating.DFAULTS = {
+                    total: 5,
+                    num: 2,
+                    readOnly: false,
+                    mode:'entire',
+                    select: function () {},
+                    chosen: function () {}
+
+                };
+                Rating.prototype.init = function () {
+                    this.buildHTML();
+                    this.setCss();
+                    if (this.opts.readOnly === false) {
+                        this.bindEvent();
+                    }
+                };
+                Rating.prototype.buildHTML = function () {
+                    var html = "";
+                    html += '<div class="rating-display"></div><ul class="rating-mask">';
+                    for (var i = 0; i < this.opts.total; i++) {
+                        html += '<li class="rating-item"></li>';
+                    }
+                    html += '</ul>';
+                    this.$el.html(html);
+                };
+                //设置父容器总宽度(星星颗数不定)
+                //设置展示层宽度
+                //设置每颗星星宽度
+                Rating.prototype.setCss = function () { 
+                    this.$el.width(this.opts.total * this.itemWidth);
+                    this.$display = this.$el.find(".rating-display");
+                    this.$display.width(this.opts.num * this.itemWidth);
+                    this.$el.find(".rating-item").width(this.itemWidth);
+                };
+                Rating.prototype.bindEvent = function () {
+                    var self = this;
+                    this.$el.on("mouseover", ".rating-item", function () {
+                        var count = $(this).index() + 1;
+                        self.$display.width(count * self.itemWidth);
+                        self.$el.trigger("select", [count, self.opts.total]);
+                    }).on("click", ".rating-item", function () {
+                        var count = $(this).index() + 1;
+                        self.displayWidth = count * self.itemWidth;
+                        self.$el.trigger("chosen", [count, self.opts.total]);
+                    }).on("mouseout", function () {
+                        self.$display.width(self.displayWidth);
+                    })
+                };
+                Rating.prototype.unbindEvent = function(){
+                    this.$el.off();
+                };
+
+
+
+                var init = function (el, options) {
+                    var $el = $(el);
+                        rating = $el.data("rating");
+                    if (!rating){
+                        $el.data("rating",(rating = new Rating(el,typeof options ==="object" && options)));
+                        rating.init();
+                    }
+                    if(typeof option ==="string"){
+                        rating[option]();
+                    }
+                };
+
+                //Jquery插件
+                $.fn.extend({
+                    rating:function(options){
+                        return this.each(function(){
+                            init(this,options);
+                        });
+                    }
+                });
+                return {
+                    init: init
+                }
+            })();
+
+            // rating.init("#rating",{
+            //     total:4,
+            //     num:3,
+            //     readOnly:false,
+            //     chosen:function(count,total){
+            //         rating.init("#rating","unbindEvent");
+            //     }
+            // })
+            $("#rating").rating({
+                total:7,
+                num:4,
+                readOnly:false,
+                mode:"half",
+                chosen:function(count,total){
+                    rating.init("#rating","unbindEvent");
+                }
+            })
+        </script>
+    </div>
+</body>
+
+</html>

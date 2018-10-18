@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>星级评分--css实现方式</title>
+    <!--未理解-->
+
+
+    <style>
+        .rating {
+            position: relative;
+            width: 300px;
+            height: 60px;
+            background: url(./image/twoStar.jpg) repeat-x;
+            margin: 100px auto;
+            overflow: hidden;
+        }
+        .rating:hover .rating-item {
+            background-image: none;
+        }
+        /* .rating-item:hover {
+            background: url(./image/twoStar.jpg) repeat-x 0 -60px !important;
+        } */
+        .rating-item {
+            position: absolute;
+            top: 0;
+            width: 60px;
+            height: 60px;
+            z-index: 3;
+        }
+
+        .rating-item-1 {
+            left: 0;
+        }
+
+        .rating-item-2 {
+            left: 60px;
+        }
+
+        .rating-item-3 {
+            left: 120px;
+        }
+
+        .rating-item-4 {
+            left: 180px;
+        }
+
+        .rating-item-5 {
+            left: 240px;
+        }
+
+        .rating-item:hover {
+            z-index: 2;
+            width: 300px;
+            height: 60px;
+            left: 0;
+            background: url(./image/twoStar.jpg) repeat-x 0 -60px !important;
+        }
+        .rating input {
+            position: absolute;
+            left: 0;
+            top: -20px;
+        }
+        input:checked + .rating-item ~ .rating-item:hover {
+            z-index: 0;
+        }
+        input:checked + .rating-item {
+            left: 0;
+            z-index: 1;
+            background: url(./image/twoStar.jpg) repeat-x 0 -60px ;
+        }
+
+        .rating-item-1:hover,
+        #rating-1:checked + .rating-item {
+            width: 60px;
+        }
+
+        .rating-item-2:hover,
+        #rating-2:checked + .rating-item {
+            width: 120px;
+        }
+
+        .rating-item-3:hover,
+        #rating-3:checked + .rating-item {
+            width: 180px;
+        }
+
+        .rating-item-4:hover,
+        #rating-4:checked + .rating-item {
+            width: 240px;
+        }
+
+        .rating-item-5:hover,
+        #rating-5:checked + .rating-item {
+            width: 300px;
+        }
+        .rating-item label {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <!--兼容IE6及以上浏览器-->
+    <!--一颗星星 宽32 高32-->
+    <div class="wrap">
+        <div class="rating">
+            <input type="radio" name="rating" value="1" id="rating-1">
+            <a href="#" class="rating-item rating-item-1" title="很不好"><label for="rating-1"></label></a>
+
+            <input type="radio" name="rating" value="2" id="rating-2">
+            <a href="#" class="rating-item rating-item-2" title="不好"><label for="rating-2"></label></a>
+
+            <input type="radio" name="rating" value="3" id="rating-3">
+            <a href="#" class="rating-item rating-item-3" title="一般"><label for="rating-3"></label></a>
+
+            <input type="radio" name="rating" value="4" id="rating-4">
+            <a href="#" class="rating-item rating-item-4" title="好"><label for="rating-4"></label></a>
+
+            <input type="radio" name="rating" value="5" id="rating-5">
+            <a href="#" class="rating-item rating-item-5" title="很好"><label for="rating-5"></label></a>
+        </div>
+    </div>
+</body>
+
+</html>

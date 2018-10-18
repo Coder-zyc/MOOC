@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>星级评分--课后练习</title>
+    <style>
+        body,
+        ul,
+        li {
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        .rating {
+            width: 150px;
+            height: 38px;
+            margin: 100px auto;
+        }
+
+        .rating-item {
+            float: left;
+            width: 30px;
+            height: 38px;
+            background: url(./image/star.png) no-repeat;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="rating" id="rating">
+        <li class="rating-item" title="很好不好"></li>
+        <li class="rating-item" title="不好"></li>
+        <li class="rating-item" title="一般"></li>
+        <li class="rating-item" title="好"></li>
+        <li class="rating-item" title="很好"></li>
+    </ul>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+        // 1 初始化函数 init
+        // 2 默认参数 defaults ：对象
+        // 3.点亮整课星星的函数 LightEntire
+
+        //匿名自调用函数,立即执行
+        var rating = (function () {
+
+            //继承
+            var extend = function (subClass, superClass) {
+                var F = function () {};
+                F.prototype = superClass.prototype;
+                subClass.prototype = new F();
+                subClass.prototype.construtor = subClass;
+            }
+
+            //父类:点亮
+            var Light = function (el, options) {
+                this.$el = $(el);
+                this.$items = this.$el.find(".rating-item");
+                this.opts = options,
+                    this.add = 1,
+                    this.selectEvent = "mouseover",
+                    this.chosen = function () {}
+            }
+            Light.prototype.init = function () {
+                this.lightOn(this.opts.num);
+                if (this.opts.readOnly == false) {
+                    this.bindEvent();
+                }
+            };
+            Light.prototype.lightOn = function (num) {
+                num = parseInt(num);
+                this.$items.each(function (index) {
+                    if (index < num) {
+                        $(this).css("background-position", "0  -38px");
+                    } else {
+                        $(this).css("background-position", "1px 2px");
+                    }
+                });
+            };
+            Light.prototype.bindEvent = function () {
+                var self = this;
+                var itemLength = self.$items.length;
+                //采用事件委托,向下传递
+                self.$el.on(self.selectEvent, ".rating-item", function (e) {
+                    var $this = $(this),
+                        num = 0;
+                    self.select(e, $this);
+                    num = $this.index() + self.add;
+
+                    self.lightOn(num);
+                }).on("click", ".rating-item", function () {
+
+                    self.opts.num = $(this).index() + self.add;
+
+                    (typeof self.opts.chosen === "function") && self.opts.chosen.call(this, self.opts
+                        .num, itemLength);
+                    // self.$el.trigger("chosen", [self.opts.num, itemLength]);
+                }).on("mouseout", function () {
+                    self.lightOn(self.opts.num);
+                });
+            };
+            Light.prototype.select = function () {
+                throw Error("子类必须继承");
+            }
+            Light.prototype.unbindEvent = function () {
+                this.$el.off();
+            }
+
+            //点亮整颗星星
+            var LightEntire = function (el, options) {
+                Light.call(this, el, options); //继承
+                this.selectEvent = "mouseover"
+            }
+            extend(LightEntire, Light);
+            LightEntire.prototype.lightOn = function (num) {
+                Light.prototype.lightOn.call(this, num);
+            };
+            LightEntire.prototype.select = function () {
+                self.add = 1;
+            };
+
+            //点亮半颗星星
+            var LightHalf = function (el, options) {
+                Light.call(this, el, options); //继承
+                this.selectEvent = "mousemove"
+            }
+            extend(LightHalf, Light);
+            LightHalf.prototype.lightOn = function (num) {
+                var count = parseInt(num),
+                    isHalf;
+                if (count != num) {
+                    isHalf = true;
+                } else {
+                    isHalf = false;
+                }
+                Light.prototype.lightOn.call(this, count);
+                if (isHalf) {
+                    this.$items.eq(count).css("background-position", "1px -78px");
+                }
+            };
+            LightHalf.prototype.select = function (e, $this) {
+                if ((e.pageX - $this.offset().left) < $this.width() / 2) {
+                    this.add = 0.5;
+                } else {
+                    this.add = 1;
+                }
+            };
+
+            var defaults = {
+                num: 0,
+                readOnly: false,
+                mode: "LightHalf"
+
+            };
+
+            var mode = {
+                "LightHalf": LightHalf,
+                "LightEntire": LightEntire
+            }
+
+            //初始化函数
+            var init = function (el, option) {
+                var $el = $(el),
+                    options = $.extend({}, defaults, typeof option === "object" && option),
+                    rating = $el.data("rating");
+                if (!mode[options.mode]) {
+                    options.mode = "LightHalf";
+                }
+                if (!rating) {
+                    $el.data("rating", (rating = new mode[options.mode](el, options)));
+                    rating.init();
+                }
+                if (typeof option === "string") {
+                    rating[option]();
+                }
+
+            };
+
+            return {
+                init: init,
+            }
+        })();
+
+        rating.init("#rating", {
+            num: 2.5,
+            mode: "LightHalf",
+            chosen: function () {
+                rating.init("#rating", "unbindEvent");
+            }
+        })
+    </script>
+</body>
+
+</html>
