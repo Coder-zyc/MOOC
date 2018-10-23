@@ -173,11 +173,11 @@
                     var id = this.getAttribute("id")
                     for (var j = 0; j < titles.length; j++) {
                         titles[j].setAttribute("class", ""); //移除每个titel上了class
-                        contents[j].style.display = "none";
+                        contents[j].setAttribute ("class","mod hide");
                     }
                     this.setAttribute("class", "select");
 
-                    contents[id].style.display = "block";
+                    contents[id].setAttribute ("class","mod show");
                 }
             }
 
