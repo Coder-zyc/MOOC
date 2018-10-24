@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Tab切换-自由切换</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+            list-style: none;
+
+        }
+
+        .notice {
+            width: 298px;
+            /*本来宽度为300 但上下border为1 故298*/
+            height: 98px;
+            /*本来宽度为100 但上下border为1 故98*/
+            border: 1px solid #eee;
+            overflow: hidden;
+            margin: 10px
+        }
+
+        .notice-tit {
+            position: relative;
+            height: 27px;
+            background: #f7f7f7;
+        }
+
+        .notice-tit ul {
+            position: absolute;
+            width: 301px;
+            /*父容器宽度为1+298+1=300 ul应完全等于父容器宽度,但考虑到左右2个选项选择时会出现1px的边框,未防止border重叠,故加一个像素*/
+            left: -1px;
+        }
+
+        .notice-tit li {
+            float: left;
+            width: 58px;
+            height: 26px;
+            line-height: 26px;
+            text-align: center;
+            padding: 0 1px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .notice li a {
+            color: #000;
+            text-decoration: none;
+        }
+
+        .notice li a:hover {
+            color: #f90;
+        }
+
+        .notice-tit li.select {
+            background: #fff;
+            border-bottom-color: #fff;
+            border-left: 1px solid #eee;
+            border-right: 1px solid #eee;
+            padding: 0px;
+        }
+
+        .notice-con {
+            margin: 10px 10px 10px 19px;
+        }
+
+        .notice-con .mod ul li {
+            float: left;
+            width: 134px;
+            height: 25px;
+            overflow: hidden;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="notice" class="notice">
+        <div id="notice-tit" class="notice-tit">
+            <ul>
+                <li class="select">
+                    <a href="#">广告</a>
+                </li>
+                <li>
+                    <a href="#">通告</a>
+                </li>
+                <li>
+                    <a href="#">公告</a>
+                </li>
+                <li>
+                    <a href="#">原告</a>
+                </li>
+                <li>
+                    <a href="#">被告</a>
+                </li>
+            </ul>
+        </div>
+        <div id="notice-con" class="notice-con">
+            <div class="mod show">
+                <ul>
+                    <li><a href="#">广告</a></li>
+                    <li><a href="#">广告</a></li>
+                    <li><a href="#">广告</a></li>
+                    <li> <a href="#">广告</a></li>
+                </ul>
+            </div>
+            <div class="mod hide">
+                <ul>
+                    <li><a href="#">通告</a></li>
+                    <li> <a href="#">通告</a></li>
+                    <li><a href="#">通告</a></li>
+                    <li> <a href="#">通告</a></li>
+                </ul>
+            </div>
+            <div class="mod hide">
+                <ul>
+                    <li><a href="#">公告</a></li>
+                    <li><a href="#">公告</a></li>
+                    <li><a href="#">公告</a></li>
+                    <li><a href="#">公告</a></li>
+                </ul>
+            </div>
+            <div class="mod hide">
+                <ul>
+                    <li><a href="#">原告</a></li>
+                    <li> <a href="#">原告</a></li>
+                    <li> <a href="#">原告</a></li>
+                    <li><a href="#">原告</a></li>
+                </ul>
+            </div>
+            <div class="mod hide">
+                <ul>
+                    <li><a href="#">被告</a></li>
+                    <li> <a href="#">被告</a></li>
+                    <li> <a href="#">被告</a></li>
+                    <li><a href="#">被告</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var tits = $("notice-tit").getElementsByTagName("li"),
+            conts = $("notice-con").getElementsByClassName("mod"),
+            time = null, //保存定时器变量
+            index = 0; //下标从0开始
+        
+        function $(str) {
+            if (typeof str === "string") {
+                return document.getElementById(str);
+            }
+            return;
+        }
+
+        window.onload = function () {
+            tab();
+
+        }
+
+        function tab() {
+            for (var i = 0; i < tits.length; i++) {
+                tits[i].setAttribute("id", i);
+                //鼠标滑过
+                tits[i].onmouseover = function () {
+                    if (time) {
+                        clearInterval(time);
+                        time = null;
+                    }
+                    changeStatus(tits, conts, this.id);
+                    index = this.getAttribute("id"); //选择的时候记录下 下标
+
+
+                    // for (var j = 0; j < tits.length; j++) {
+                    //     tits[j].setAttribute("class", "");
+                    //     conts[j].setAttribute("class", "mod hide");
+                    // }
+                    // tits[this.id].setAttribute("class", "select");
+                    // conts[this.id].setAttribute("class", "mod show");
+                }
+                tits[i].onmouseout = function () {
+                    time = setTime(index,tits.length,2000);
+                    // time = setInterval(function () {
+                    //     index++;
+                    //     if (index == tits.length) {
+                    //         index = 0;
+                    //     }
+                    //     for (var i = 0; i < tits.length; i++) {
+                    //         tits[i].setAttribute("class", "");
+                    //         conts[i].setAttribute("class", "mod hide");
+                    //     }
+                    //     tits[index].setAttribute("class", "select");
+                    //     conts[index].setAttribute("class", "mod show");
+                    //     changeStatus(tits, conts, index);
+                    // }, 2000);
+                }
+            }
+
+            //初始化化
+            time = setTime(index,tits.length,2000);
+            // time = setInterval(function () {
+            //     index++;
+            //     if (index == tits.length) {
+            //         index = 0;
+            //     }
+            //     for (var i = 0; i < tits.length; i++) {
+            //         tits[i].setAttribute("class", "");
+            //         conts[i].setAttribute("class", "mod hide");
+            //     }
+            //     tits[index].setAttribute("class", "select");
+            //     conts[index].setAttribute("class", "mod show");
+            //     changeStatus(tits, conts, index);
+            // }, 2000);
+        }
+
+
+        function changeStatus(tits, conts, index) {
+            for (var i = 0; i < tits.length; i++) {
+                tits[i].setAttribute("class", "");
+                conts[i].setAttribute("class", "mod hide");
+            }
+            tits[index].setAttribute("class", "select");
+            conts[index].setAttribute("class", "mod show");
+        }
+
+        // index:下标 length:长度 time:时间
+        function setTime(index, length, time) {
+
+            var t = null;
+            t = setInterval(function () {
+                index++;
+                if (index == length) {
+                    index = 0;
+                }
+                changeStatus(tits, conts, index);
+            }, time);
+
+            return t;
+        }
+    </script>
+</body>
+
+</html>
