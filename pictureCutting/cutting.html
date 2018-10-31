@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>图片裁剪</title>
+    <style>
+        body {
+            background: #222222;
+            padding: 0;
+            margin: 0;
+
+        }
+
+        #main {
+            position: absolute;
+            left: 200px;
+            top: 100px;
+
+        }
+
+        #img1 {
+            position: absolute;
+            opacity: 0.5;
+           
+
+        }
+
+        #img2 {
+            position: absolute;
+            /* top: 0;
+            left: 0; */
+            clip: rect(0px, 200px, 200px, 0px);
+           
+        }
+
+        #pullBox {
+            border: 1px solid #ffffff;
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .mainDiv {
+            width: 6px;
+            height: 6px;
+            background: #ffffff;
+            position: absolute;
+        }
+
+        /*四个角*/
+        .left-up {
+            top: -3px;
+            left: -3px;
+            cursor: nw-resize
+        }
+
+        .left-bottom {
+            bottom: -3px;
+            left: -3px;
+            cursor: sw-resize;
+        }
+
+        .right-up {
+            top: -3px;
+            right: -3px;
+            cursor: ne-resize;
+        }
+
+        .right-bottom {
+            bottom: -3px;
+            right: -3px;
+            cursor: se-resize;
+        }
+
+        /*四条线*/
+        .up {
+            top: -3px;
+            left: 50%;
+            margin-left: -3px;
+            cursor: n-resize;
+        }
+
+        .left-middle {
+            left: -3px;
+            top: 50%;
+            margin-top: -3px;
+            cursor: w-resize;
+        }
+
+        .right-middle {
+            right: -3px;
+            top: 50%;
+            margin-top: -3px;
+            cursor: e-resize;
+        }
+
+        .bottom {
+            bottom: -3px;
+            left: 50%;
+            margin-left: -3px;
+            cursor: s-resize;
+        }
+
+        /* #preview {
+            position: absolute;
+            width: 460px;
+            height: 360px;
+            top: 100px;
+            left: 670px;
+        }
+
+        #preview img {
+            position: absolute;
+          
+        } */
+        #preview {
+			position: absolute;
+			top: 100px;
+			left: 680px;
+			width: 460px;
+			height: 360px;
+		}
+
+		#preview #img3 {
+			position: absolute;
+			top: 0;
+			left: 0;
+           
+		}
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <img src="./img/1.jpg" id="img1">
+        <img src="./img/1.jpg" id="img2">
+        <div id="pullBox">
+            <div id="leftUp" class="mainDiv left-up"></div>
+            <div id="up" class="mainDiv up"></div>
+            <div id="rightUp" class="mainDiv right-up"></div>
+            <div id="leftMiddle" class="mainDiv left-middle"></div>
+            <div id="rightMiddle" class="mainDiv right-middle"></div>
+            <div id="leftBottom" class="mainDiv left-bottom"></div>
+            <div id="bottom" class="mainDiv bottom"></div>
+            <div id="rightBottom" class="mainDiv right-bottom"></div>
+        </div>
+    </div>
+    <div id="preview">
+        <img src="./img/1.jpg" id="img3">
+    </div>
+    <script>
+        window.onload = function () {
+            document.onselectstart = new Function("event.returnValue=false"); //取消图片拉升时一闪一闪的
+            var main = document.getElementById("main");
+            var pullBox = document.getElementById("pullBox"),
+                rightMiddle = document.getElementById("rightMiddle"),
+                leftMiddle = document.getElementById("leftMiddle"),
+                top = document.getElementById("up"),
+                bot = document.getElementById("bottom"),
+                leftUp = document.getElementById("leftUp"),
+                rightUp = document.getElementById("rightUp"),
+                leftBottom = document.getElementById("leftBottom"),
+                rightBottom = document.getElementById("rightBottom"),
+                ifKeyDowm = false;
+
+            rightMiddle.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "right";
+            }
+            leftMiddle.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "left";
+            }
+            top.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "up";
+            }
+            bot.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "bottom";
+            }
+            leftUp.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "leftUp";
+            }
+            rightUp.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "rightUp";
+            }
+            leftBottom.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "leftBottom";
+            }
+            rightBottom.onmousedown = function () {
+                ifKeyDowm = true;
+                content = "rightBottom";
+            }
+            window.onmouseup = function () {
+                ifKeyDowm = false;
+            }
+            //鼠标移动
+            window.onmousemove = function (e) {
+                var width = rightUp.offsetLeft - leftUp.offsetLeft;
+                // console.log(width);
+                //无用 向上限定有bug
+                var height = bot.offsetTop;
+
+                // console.log(height);
+                if (ifKeyDowm) {
+                    switch (content) {
+                        case "right":
+                            right(e);
+                            break;
+                        case "left":
+                            left(e, width);
+                            break;
+                        case "up":
+                            up(e);
+                            break;
+                        case "bottom":
+                            bottom(e);
+                            break;
+                        case "leftUp":
+                            up(e);
+                            left(e);
+                            break;
+                        case "rightUp":
+                            up(e);
+                            right(e);
+                            break;
+                        case "leftBottom":
+                            bottom(e);
+                            left(e);
+                            break;
+                        case "rightBottom":
+                            right(e);
+                            bottom(e);
+                            break;
+                    }
+                    setChoise();
+                    setPreview();
+                }
+            }
+
+
+            function right(e) {
+                e.stopPropagation();
+                var x = e.clientX, //鼠标距离浏览器的X坐标
+                    addWidth = "",
+                    widthBefore = pullBox.offsetWidth - 2;
+
+
+                addWidth = x - getPositon(pullBox).left - widthBefore;
+                pullBox.style.width = addWidth + widthBefore + "px";
+
+                if (getPositon(rightUp).left > 660) {
+                    pullBox.style.width = 456 - leftUp.offsetLeft + "px";
+                }
+
+            }
+
+            function left(e, width) {
+                e.stopPropagation();
+                var x = e.clientX,
+                    addWidth = "",
+                    widthBefore = pullBox.offsetWidth - 2;
+                addWidth = getPositon(pullBox).left - x;
+                pullBox.style.width = addWidth + widthBefore + "px";
+                pullBox.style.left = pullBox.offsetLeft - addWidth + "px";
+
+                // var width = rightUp.offsetLeft-leftUp.offsetLeft;
+                if (getPositon(leftUp).left < 200 || getPositon(leftUp).left > 660) {
+                    pullBox.style.width = width + "px";
+                    pullBox.style.left = 0 + "px";
+                }
+
+            }
+
+            function up(e, height) {
+                e.stopPropagation();
+                var y = e.clientY,
+                    addHeight = "",
+                    heightBefore = pullBox.offsetHeight - 2;
+                addHeight = getPositon(pullBox).top - y;
+                pullBox.style.height = addHeight + heightBefore + "px";
+                pullBox.style.top = pullBox.offsetTop - addHeight + "px";
+
+                if (getPositon(leftUp).top < 100) {
+                    pullBox.style.height = height + "px";
+                    pullBox.style.top = 0 + "px";
+                }
+            }
+
+            function bottom(e) {
+                e.stopPropagation();
+                var y = e.clientY,
+                    addHeight = "",
+                    heightBefore = pullBox.offsetHeight - 2;
+                addHeight = y - getPositon(pullBox).top - heightBefore;
+
+                pullBox.style.height = addHeight + heightBefore + "px";
+                // pullBox.style.top = pullBox.offsetTop - addHeight + "px";
+                if (getPositon(bot).top > 460) {
+                    console.log(bot.offsetTop);
+                    pullBox.style.height = 356 - top.offsetTop + "px";
+                }
+            }
+
+            //获取元素位置或坐标
+            function getPositon(node) {
+                var left = node.offsetLeft,
+                    top = node.offsetTop,
+                    parent = node.offsetParent;
+                while (parent != null) {
+                    left = left + parent.offsetLeft;
+                    top = top + parent.offsetTop;
+                    parent = parent.offsetParent;
+                }
+                return {
+                    "left": left,
+                    "top": top
+                }
+
+            }
+
+            //选择选择区域
+            function setChoise() {
+                var top = pullBox.offsetTop,
+                    bottom = pullBox.offsetTop + pullBox.offsetHeight - 2,
+                    left = pullBox.offsetLeft,
+                    right = pullBox.offsetLeft + pullBox.offsetWidth - 2;
+                var img2 = document.getElementById("img2");
+                img2.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
+            }
+
+            function setPreview() {
+                var top = pullBox.offsetTop,
+                    bottom = pullBox.offsetTop + pullBox.offsetHeight - 2,
+                    left = pullBox.offsetLeft,
+                    right = pullBox.offsetLeft + pullBox.offsetWidth - 2;
+                var img3  = document.getElementById("img3");
+                img3.style.top = -top + "px";
+                img3.style.left = -left + "px";
+                img3.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
+            }
+
+
+        }
+    </script>
+</body>
+
+</html>
