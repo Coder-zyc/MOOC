@@ -15,7 +15,7 @@
         }
 
         #main {
-            position: absolute;
+            position: relative;
             left: 200px;
             top: 100px;
             width: 460px;
@@ -118,6 +118,7 @@
 
         #preview img {
             position: absolute;
+
         }
     </style>
 </head>
@@ -154,12 +155,16 @@
                 leftBottom = document.getElementById("leftBottom"),
                 rightBottom = document.getElementById("rightBottom"),
                 ifKeyDowm = false;
-            $( "#pullBox" ).draggable({ containment: 'parent' ,drag: setChoice});
+
+                setChoise(pullBox);
+                setPreview(pullBox);
+
             rightMiddle.onmousedown = function (e) {
                 e.stopPropagation();
                 ifKeyDowm = true;
                 contact = "right";
             };
+
             leftMiddle.onmousedown = function (e) {
                 e.stopPropagation();
                 ifKeyDowm = true;
@@ -202,7 +207,7 @@
             };
             //鼠标移动
             window.onmousemove = function (e) {
-               
+
                 e.stopPropagation();
                 if (ifKeyDowm) {
                     switch (contact) {
@@ -235,32 +240,42 @@
                             bottom(e);
                             break;
                     }
-                    setChoise();
-                    setPreview();
+                    setChoise(pullBox);
+                    setPreview(pullBox);
                 }
             };
+
+            pullBox.onmousedown = function () {
+                drag(pullBox,main); 
+                setChoise(this);
+                setPreview(this);
+            }
+            pullBox.onmouseup = function () {
+                setChoise(this);
+                setPreview(this);
+            }
 
             /*
                 函数区
             */
 
             //右边拖动
-            function right(e) {             
+            function right(e) {
                 var x = e.clientX, //鼠标距离浏览器的X坐标
                     addWidth = "",
-                    widthBefore = pullBox.offsetWidth - 2;//选择层宽度
-                if ( x > (getPositon(main).left + main.offsetWidth) ) {
+                    widthBefore = pullBox.offsetWidth - 2; //选择层宽度
+                if (x > (getPositon(main).left + main.offsetWidth)) {
                     x = getPositon(main).left + main.offsetWidth;
                 }
-                var mainX = getPositon(leftUp).left +3 ; //左上角横坐标
+                var mainX = getPositon(leftUp).left + 3; //左上角横坐标
                 addWidth = x - mainX - widthBefore;
                 pullBox.style.width = addWidth + widthBefore + "px";
 
-                
+
             }
             //左边拖到
             function left(e) {
-                
+
                 var x = e.clientX; //鼠标横坐标
                 //限定判断,鼠标超过左边限定，还原
                 if (x < getPositon(main).left) {
@@ -269,10 +284,10 @@
 
                 var addWidth = "";
                 var widthBefore = pullBox.offsetWidth - 2; //选择层宽度
-                var mainX = getPositon(leftUp).left + 3;//左上角横坐标
+                var mainX = getPositon(leftUp).left + 3; //左上角横坐标
                 addWidth = mainX - x; // 拖动后应该增加的宽度
                 pullBox.style.width = addWidth + widthBefore + "px";
-                pullBox.style.left = pullBox.offsetLeft -mainX + x + "px";
+                pullBox.style.left = pullBox.offsetLeft - mainX + x + "px";
 
                 // var width = rightUp.offsetLeft-leftUp.offsetLeft;
                 // if (getPositon(leftUp).left < 200 || getPositon(leftUp).left > 660) {
@@ -284,35 +299,35 @@
 
             //上边拖动
             function up(e) {
-            
+
                 var y = e.clientY, //获取鼠标纵坐标
                     addHeight = "",
                     heightBefore = pullBox.offsetHeight - 2; //选择层高度
                 //限定判断,鼠标超过上边限定，还原
-                if ( y < getPositon(main).top){
-                    y=getPositon(main).top; 
+                if (y < getPositon(main).top) {
+                    y = getPositon(main).top;
                 }
-                var mainY = getPositon(leftUp).top +3 ; //左上角纵坐标
+                var mainY = getPositon(leftUp).top + 3; //左上角纵坐标
                 addHeight = mainY - y; //拖动后应该增加的高度
 
                 //设置拖动后的高度和位置
                 pullBox.style.height = addHeight + heightBefore + "px";
                 pullBox.style.top = pullBox.offsetTop - mainY + y + "px";
 
-                
+
             }
-            
+
             //下边拖动
             function bottom(e) {
-               
-                var y = e.clientY,//鼠标纵坐标
+
+                var y = e.clientY, //鼠标纵坐标
                     addHeight = "",
                     heightBefore = pullBox.offsetHeight - 2; //选择层高度
-                 //限定判断,鼠标超过下边限定，还原
-                if ( y > (getPositon(main).top + main.offsetHeight)) {
+                //限定判断,鼠标超过下边限定，还原
+                if (y > (getPositon(main).top + main.offsetHeight)) {
                     y = getPositon(main).top + main.offsetHeight;
                 }
-                var mainY = getPositon(leftUp).top + 3 ; //左上角纵坐标
+                var mainY = getPositon(leftUp).top + 3; //左上角纵坐标
                 addHeight = y - mainY - heightBefore;
 
                 pullBox.style.height = addHeight + heightBefore + "px";
@@ -341,27 +356,112 @@
             }
 
             //选择选择区域
-            function setChoise() {
-                var top = pullBox.offsetTop,
-                    bottom = pullBox.offsetTop + pullBox.offsetHeight - 2,
-                    left = pullBox.offsetLeft,
-                    right = pullBox.offsetLeft + pullBox.offsetWidth - 2;
+            // function setChoise() {
+            //     var top = pullBox.offsetTop,
+            //         bottom = pullBox.offsetTop + pullBox.offsetHeight - 2,
+            //         left = pullBox.offsetLeft,
+            //         right = pullBox.offsetLeft + pullBox.offsetWidth - 2;
+            //     var img2 = document.getElementById("img2");
+            //     img2.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
+            // }
+            function setChoise(box) {
+                if(box == null) {
+                    return
+                }
+                var top = box.offsetTop,
+                    bottom = box.offsetTop + box.offsetHeight - 2,
+                    left = box.offsetLeft,
+                    right = box.offsetLeft + box.offsetWidth - 2;
                 var img2 = document.getElementById("img2");
                 img2.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
             }
 
-            function setPreview() {
-                var top = pullBox.offsetTop,
-                    bottom = pullBox.offsetTop + pullBox.offsetHeight - 2,
-                    left = pullBox.offsetLeft,
-                    right = pullBox.offsetLeft + pullBox.offsetWidth - 2;
+            // function setPreview() {
+            //     var top = pullBox.offsetTop,
+            //         bottom = pullBox.offsetTop + pullBox.offsetHeight - 2,
+            //         left = pullBox.offsetLeft,
+            //         right = pullBox.offsetLeft + pullBox.offsetWidth - 2;
+            //     var img3 = document.getElementById("img3");
+            //     img3.style.top = -top + "px";
+            //     img3.style.left = -left + "px";
+            //     img3.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
+            // }
+            function setPreview(box) {
+                
+                var top = box.offsetTop,
+                    bottom = box.offsetTop + box.offsetHeight - 2,
+                    left = box.offsetLeft,
+                    right = box.offsetLeft + box.offsetWidth - 2;
                 var img3 = document.getElementById("img3");
                 img3.style.top = -top + "px";
                 img3.style.left = -left + "px";
                 img3.style.clip = "rect(" + top + "px," + right + "px," + bottom + "px," + left + "px)";
             }
 
+            //图片选择框的拖动
+            function drag(child, parent) {
+                if (child == null || parent == null) {
+                    return
+                }
+                var isDraging = false //是否为可拖动
+                var mouseOffsetX = 0 //X位置的偏移
+                var mouseOffsetY = 0 //y位置的偏移
+                child.addEventListener("mousedown", function (e) {
+                    console.log(parent);
+                    console.log(e.clientX);
+                    console.log(parent.offsetLeft);
+                    
+                    mouseOffsetX = e.clientX -child.offsetLeft; //84
+                    mouseOffsetY = e.clientY - child.offsetTop;
+                    isDraging = true;
+                   
+                });
+                document.addEventListener("mousemove", function (e) {
+                    var mouseX = e.clientX; //此时x,y的鼠标位置
+                    var mouseY = e.clientY;
+                    
+                    
+                    var moveX =0;
+                    var moveY =0;
+                    if (isDraging) {
+                       
+                        moveX = mouseX - mouseOffsetX; //200
+                        moveY = mouseY - mouseOffsetY;
+                        
+                       
+                        //限定范围
+                        var pWidth =parent.offsetWidth; //父容器的范围
+                        var pHeight = parent.offsetHeight;
 
+                        var cWidth = child.offsetWidth; 
+                        var cHeight = child.offsetHeight;
+
+                        var maxX =pWidth-cWidth;
+                        var maxY = pHeight - cHeight;
+
+                        if (moveX < 0) {
+                            moveX = 0;
+                        }else if (moveX > maxX){
+                            moveX=maxX
+                        }
+                        if (moveY < 0) {
+                            moveY = 0 ;
+                        }else if(moveY >maxY) {
+                            moveY =maxY;
+                        }
+                        
+                        child.style.left = moveX +"px";
+                      
+                        child.style.top = moveY + "px";
+                    }
+
+                });
+                document.addEventListener("mouseup", function (e) {
+                    isDraging = false;
+                });
+            }
+
+            
         }
     </script>
 </body>
