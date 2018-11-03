@@ -1,0 +1,28 @@
+CSS 笔记
+    background 属性缩写顺序
+        background-color , background-image , background-position,background-attachment,background-repeat
+
+    background-attachment 属性设置背景图像是否固定或者随着页面的其余部分滚动。
+        可以取的值 
+            scroll 默认值。背景图像会随着页面其余部分的滚动而移动。
+            fixed 当页面的其余部分滚动时，背景图像不会移动。
+            inherit 规定应该从父元素继承 background-attachment 属性的设置。
+
+    cursor 属性 move:鼠标十字箭头样式   
+    opacity :设置不透明性  
+    
+HTML 笔记
+    onselect 事件：是在文本框内(input,textarea)内的文本被选中时所触发的事件,其触发事件
+                  在文本被选择以后(即文本以被选择,已显示的表示出来),该事件只被input和textarea支持
+    onselectstart 事件 :使用js禁止用户选中网页上的内容
+        onselectstart 事件不被input和textarea标签支持
+        例：<body onselectstart="return false">  
+
+JS 笔记
+    HTML中document.body 和XHTML里document.documentElement,都指的是body节点
+    documentElement对应的是html标签
+    body对应的是body标签
+    页面具有DID,或者说指定了DOCTYPE时,使用document.documentElemment
+    页面不具有DID,或者说没有指定DOCTYPE时,使用document.body
+    IE和Firefox中均如此
+
